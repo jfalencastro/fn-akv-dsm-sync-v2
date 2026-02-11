@@ -24,7 +24,11 @@ def akv_dsm_sync(event: func.EventGridEvent):
         event_data = event.get_json()
         logging.info(f"Event data: {event_data}")
 
-        secret_name = event_data["objectName"]
+        secret_name = event_data.get("ObjectName") or event_data.get("objectName")
+
+        if not secret_name:
+            logging.error(f"Não foi possível encontrar o nome do objeto no payload: {event_data}")
+            return
 
         # =========================
         # Buscar secret no Key Vault
