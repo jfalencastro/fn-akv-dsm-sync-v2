@@ -1,4 +1,4 @@
-name: Build and deploy Python project to Azure Function App - fn-akv-dsm-sync-v2
+name: Deploy Python Function - fn-akv-dsm-sync-v2
 
 on:
   push:
@@ -7,12 +7,15 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # Indica a raiz do projeto
   PYTHON_VERSION: '3.11'
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -21,30 +24,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-
-      # No modelo de build remoto, o artefato é apenas o código fonte limpo
-      - name: Upload artifact for deployment job
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-app
-          path: |
-            .
-            !venv/
-            !.git/
-            !.github/
-
-  deploy:
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      id-token: write
-      contents: read
-
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: python-app
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -55,10 +34,8 @@ jobs:
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
-        id: deploy-to-function
         with:
           app-name: 'fn-akv-dsm-sync-v2'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          # ESSENCIAIS para o build remoto e descompactação correta:
+          package: '.'  # Envia a pasta raiz diretamente
           scm-do-build-during-deployment: true
           enable-oryx-build: true
