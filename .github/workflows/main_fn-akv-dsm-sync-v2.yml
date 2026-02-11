@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' 
+  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # Indica a raiz do projeto
   PYTHON_VERSION: '3.11'
 
 jobs:
@@ -22,16 +22,16 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create artifact for deployment
-        # Aqui não instalamos as dependências com --target. 
-        # Apenas zipamos o código limpo.
-        run: zip release.zip function_app.py host.json requirements.txt
-
+      # No modelo de build remoto, o artefato é apenas o código fonte limpo
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: python-app
-          path: release.zip
+          path: |
+            .
+            !venv/
+            !.git/
+            !.github/
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,12 +55,10 @@ jobs:
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
+        id: deploy-to-function
         with:
           app-name: 'fn-akv-dsm-sync-v2'
-          package: '.' # Mude de 'release.zip' para '.'
+          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          # ESSENCIAIS para o build remoto e descompactação correta:
           scm-do-build-during-deployment: true
           enable-oryx-build: true
-
-
-
-
