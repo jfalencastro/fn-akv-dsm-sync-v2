@@ -55,11 +55,12 @@ jobs:
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
-        id: deploy-to-function
         with:
           app-name: 'fn-akv-dsm-sync-v2'
-          slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: '.' # Mude de 'release.zip' para '.'
+          scm-do-build-during-deployment: true
+          enable-oryx-build: true
+
 
 
 
