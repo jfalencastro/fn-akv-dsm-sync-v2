@@ -55,11 +55,10 @@ jobs:
 
       - name: 'Deploy to Azure Functions'
         uses: Azure/functions-action@v1
-        id: deploy-to-function
         with:
           app-name: 'fn-akv-dsm-sync-v2'
-          package: 'release.zip'
-          # Estas duas linhas abaixo ativam o build no servidor da Azure:
+          package: '.'  # Envie a pasta, não o zip manual se possível
           scm-do-build-during-deployment: true
           enable-oryx-build: true
+
 
