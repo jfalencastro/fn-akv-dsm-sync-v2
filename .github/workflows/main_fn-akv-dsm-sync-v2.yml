@@ -10,7 +10,7 @@ env:
   PYTHON_VERSION: '3.11'
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     permissions:
       id-token: write
@@ -36,6 +36,6 @@ jobs:
         uses: Azure/functions-action@v1
         with:
           app-name: 'fn-akv-dsm-sync-v2'
-          package: '.'  # Envia a pasta raiz diretamente
+          package: '.'  # Envia os arquivos da raiz
           scm-do-build-during-deployment: true
           enable-oryx-build: true
