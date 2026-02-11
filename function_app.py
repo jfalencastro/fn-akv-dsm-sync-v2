@@ -1,21 +1,20 @@
 import logging
+import os
+import azure.functions as func
+# Mantenha apenas os imports nativos ou garantidos no topo
 import json
 import base64
-import os
-import requests
-import azure.functions as func
-from azure.identity import DefaultAzureCredential
-from azure.keyvault.secrets import SecretClient
+import requests 
 
 app = func.FunctionApp()
 
-# =========================
-# Event Grid Trigger
-# =========================
 @app.function_name(name="akv_dsm_sync")
 @app.event_grid_trigger(arg_name="event")
 def akv_dsm_sync(event: func.EventGridEvent):
-
+    # Imports "perigosos" dentro da função
+    from azure.identity import DefaultAzureCredential
+    from azure.keyvault.secrets import SecretClient
+    
     logging.info("Evento recebido do Event Grid")
 
     try:
