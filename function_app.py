@@ -1,13 +1,11 @@
 import logging
+import json
+import base64
 import os
+import requests
 import azure.functions as func
-# Tente o import dentro de um bloco try para não derrubar o worker no boot
-try:
-    from azure.identity import DefaultAzureCredential
-    from azure.keyvault.secrets import SecretClient
-    import requests
-except ImportError as e:
-    logging.error(f"Falha ao importar dependências: {e}")
+from azure.identity import DefaultAzureCredential
+from azure.keyvault.secrets import SecretClient
 
 app = func.FunctionApp()
 
